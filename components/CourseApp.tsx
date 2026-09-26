@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { dayMeta, lessons } from "@/data/course";
 import { explanations } from "@/data/explanations";
+import Playground from "@/components/Playground";
 
 const STORAGE_KEY = "mongo-course-progress-v1";
 
@@ -102,8 +103,27 @@ export default function CourseApp() {
         <div className="scene teaching">
           <div className="sceneNo">03</div>
           <div className="grow">
-            <span className="sceneLabel">كيف يعمل؟</span>
-            <h2>الخطوات التي تحدث</h2>
+            <span className="sceneLabel">نقاط الدرس</span>
+            <h2>نفهم كل نقطة واحدة واحدة</h2>
+            <div className="conceptGrid">
+              {lesson.concepts.map((concept, index) => (
+                <article className="conceptCard" key={concept}>
+                  <div className="conceptIndex">{String(index + 1).padStart(2, "0")}</div>
+                  <div>
+                    <h3>{concept}</h3>
+                    <p>{explanation.how[index] ?? explanation.how[explanation.how.length - 1]}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="scene teaching">
+          <div className="sceneNo">04</div>
+          <div className="grow">
+            <span className="sceneLabel">كيف تعمل الفكرة؟</span>
+            <h2>رتّب الصورة في دماغك</h2>
             <div className="steps">
               {explanation.how.map((item, index) => (
                 <div className="step" key={item}><b>{index + 1}</b><p>{item}</p></div>
@@ -112,17 +132,18 @@ export default function CourseApp() {
           </div>
         </div>
 
-        {lesson.code && (
-          <div className="scene teaching">
-            <div className="sceneNo">04</div>
-            <div className="grow">
-              <span className="sceneLabel">الكود</span>
-              <h2>شاهد الفكرة في سطر عملي</h2>
-              {explanation.codeNote && <p className="codeNote">{explanation.codeNote}</p>}
-              <pre><code>{lesson.code}</code></pre>
-            </div>
+        <div className="scene teaching">
+          <div className="sceneNo">07</div>
+          <div className="grow">
+            <span className="sceneLabel">جرّب بنفسك</span>
+            <h2>اكتب وشغّل الكود داخل الدرس</h2>
+            <p className="playgroundIntro">
+              غيّر القيم بنفسك ثم اضغط Run. الهدف هنا أن ترى نتيجة الـ Query فورًا بدل الاكتفاء بقراءة الكود.
+            </p>
+            {explanation.codeNote && <p className="codeNote">{explanation.codeNote}</p>}
+            <Playground lessonId={lesson.id} initialCode={lesson.code} />
           </div>
-        )}
+        </div>
 
         <div className="rememberCard">
           <span>الخلاصة التي يجب أن تتذكرها</span>
