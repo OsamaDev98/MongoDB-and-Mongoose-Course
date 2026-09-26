@@ -96,6 +96,62 @@ function extractMethodArgs(code: string, method: string): string[] {
   return args;
 }
 
+function applyProjection(doc: any, projection: any) {
+  if (!projection || Object.keys(projection).length === 0) return doc;
+
+  const entries = Object.entries(projection);
+  const includeFields = entries.filter(([key, value]) => key !== "_id" && value === 1).map(([key]) => key);
+  const excludeFields = entries.filter(([, value]) => value === 0).map(([key]) => key);
+
+  // Inclusion mode: return only fields marked with 1.
+  // MongoDB includes _id by default unless explicitly set to 0.
+  if (includeFields.length > 0) {
+    const result: any = {};
+
+    if (projection._id !== 0 && doc._id !== undefined) {
+      result._id = doc._id;
+    }
+
+    includeFields.forEach((field) => {
+      const value = getByPath(doc, field);
+      if (value !== undefined) {
+        if (!field.includes(".")) {
+          result[field] = value;
+        } else {
+          const parts = field.split(".");
+          let target = result;
+          for (let i = 0; i < parts.length - 1; i++) {
+            target[parts[i]] ??= {};
+            target = target[parts[i]];
+          }
+          target[parts[parts.length - 1]] = value;
+        }
+      }
+    });
+
+    return result;
+  }
+
+  // Exclusion mode: clone the document then remove fields marked with 0.
+  const result = structuredClone(doc);
+  excludeFields.forEach((field) => {
+    if (!field.includes(".")) {
+      delete result[field];
+      return;
+    }
+
+    const parts = field.split(".");
+    let target: any = result;
+    for (let i = 0; i < parts.length - 1; i++) {
+      target = target?.[parts[i]];
+      if (!target) return;
+    }
+    delete target[parts[parts.length - 1]];
+  });
+
+  return result;
+}
+
 function runMongo(code: string, input: Product[]) {
   const data = structuredClone(input);
 
@@ -108,6 +164,7 @@ function runMongo(code: string, input: Product[]) {
   if (code.includes(".find(")) {
     const args = extractMethodArgs(code, "find");
     const filter = safeEvalObject(args[0] || "{}");
+    const projection = args[1] ? safeEvalObject(args[1]) : null;
     let result: any[] = data.filter((d) => matches(d, filter));
 
     const sortArgs = extractMethodArgs(code, "sort");
@@ -129,6 +186,10 @@ function runMongo(code: string, input: Product[]) {
     if (skipArgs[0]) result = result.slice(Number(skipArgs[0]));
     const limitArgs = extractMethodArgs(code, "limit");
     if (limitArgs[0]) result = result.slice(0, Number(limitArgs[0]));
+
+    if (projection) {
+      result = result.map((doc) => applyProjection(doc, projection));
+    }
 
     return { data, output: result };
   }
