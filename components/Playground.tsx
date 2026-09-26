@@ -133,6 +133,35 @@ function runMongo(code: string, input: Product[]) {
     return { data, output: result };
   }
 
+  if (code.includes(".insertMany(")) {
+    const [docsText] = extractMethodArgs(code, "insertMany");
+    const docs = safeEvalObject(docsText);
+
+    if (!Array.isArray(docs)) {
+      throw new Error("insertMany() expects an array of documents");
+    }
+
+    let nextId = data.length ? Math.max(...data.map(d => d._id)) + 1 : 1;
+    const insertedIds: Record<number, number> = {};
+    const insertedDocuments = docs.map((doc: any, index: number) => {
+      const inserted = { _id: nextId++, ...doc };
+      insertedIds[index] = inserted._id;
+      return inserted;
+    });
+
+    data.push(...insertedDocuments);
+
+    return {
+      data,
+      output: {
+        acknowledged: true,
+        insertedCount: insertedDocuments.length,
+        insertedIds,
+        documents: insertedDocuments
+      }
+    };
+  }
+
   if (code.includes(".insertOne(")) {
     const [docText] = extractMethodArgs(code, "insertOne");
     const doc = safeEvalObject(docText);
@@ -166,7 +195,7 @@ function runMongo(code: string, input: Product[]) {
     return { data, output: { deletedCount: 1, document: deleted } };
   }
 
-  return { data, output: "المحاكي يدعم الآن find / findOne / insertOne / updateOne / deleteOne في أمثلة MongoDB الأساسية." };
+  return { data, output: "المحاكي يدعم الآن find / findOne / insertOne / insertMany / updateOne / deleteOne في أمثلة MongoDB الأساسية." };
 }
 
 export default function Playground({ lessonId, initialCode }: Props) {
