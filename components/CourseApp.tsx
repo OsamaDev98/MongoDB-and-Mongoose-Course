@@ -6,6 +6,7 @@ import { dayMeta, lessons } from "@/data/course";
 import { explanations } from "@/data/explanations";
 import Playground from "@/components/Playground";
 import { lessonPoints } from "@/data/lesson-points";
+import { playgroundExamples } from "@/data/playground-examples";
 
 const STORAGE_KEY = "mongo-course-progress-v1";
 
@@ -145,7 +146,7 @@ export default function CourseApp() {
               غيّر القيم بنفسك ثم اضغط Run. الهدف هنا أن ترى نتيجة الـ Query فورًا بدل الاكتفاء بقراءة الكود.
             </p>
             {explanation.codeNote && <p className="codeNote">{explanation.codeNote}</p>}
-            <Playground lessonId={lesson.id} initialCode={lesson.code} />
+            <Playground lessonId={lesson.id} initialCode={playgroundExamples[lesson.id] ?? lesson.code} />
           </div>
         </div>
 
