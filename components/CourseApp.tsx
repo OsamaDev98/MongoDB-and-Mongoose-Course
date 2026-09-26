@@ -5,6 +5,7 @@ import { gsap } from "gsap";
 import { dayMeta, lessons } from "@/data/course";
 import { explanations } from "@/data/explanations";
 import Playground from "@/components/Playground";
+import { lessonPoints } from "@/data/lesson-points";
 
 const STORAGE_KEY = "mongo-course-progress-v1";
 
@@ -29,6 +30,7 @@ export default function CourseApp() {
 
   const lesson = lessons.find((l) => l.id === activeId)!;
   const explanation = explanations[activeId];
+  const points = lessonPoints[activeId] ?? [];
   const progress = Math.round((completed.length / lessons.length) * 100);
   const dayLessons = useMemo(() => [1, 2, 3].map((d) => lessons.filter((l) => l.day === d)), []);
 
@@ -106,12 +108,14 @@ export default function CourseApp() {
             <span className="sceneLabel">نقاط الدرس</span>
             <h2>نفهم كل نقطة واحدة واحدة</h2>
             <div className="conceptGrid">
-              {lesson.concepts.map((concept, index) => (
-                <article className="conceptCard" key={concept}>
+              {points.map((point, index) => (
+                <article className="conceptCard detailed" key={point.title}>
                   <div className="conceptIndex">{String(index + 1).padStart(2, "0")}</div>
-                  <div>
-                    <h3>{concept}</h3>
-                    <p>{explanation.how[index] ?? explanation.how[explanation.how.length - 1]}</p>
+                  <div className="conceptBody">
+                    <h3>{point.title}</h3>
+                    <p>{point.explanation}</p>
+                    {point.example && <div className="miniExample"><b>مثال:</b> {point.example}</div>}
+                    {point.code && <pre className="miniCode"><code>{point.code}</code></pre>}
                   </div>
                 </article>
               ))}
