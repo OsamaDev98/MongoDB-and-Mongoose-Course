@@ -170,20 +170,61 @@ function runMongo(code: string, input: Product[]) {
     return { data, output: { acknowledged: true, insertedId: inserted._id, document: inserted } };
   }
 
+  function applyUpdate(doc: any, update: any) {
+    if (update.$set) Object.assign(doc, update.$set);
+    if (update.$unset) Object.keys(update.$unset).forEach((k) => delete doc[k]);
+    if (update.$inc) Object.entries(update.$inc).forEach(([k,v]) => doc[k] = (doc[k] ?? 0) + Number(v));
+    if (update.$push) Object.entries(update.$push).forEach(([k,v]) => { doc[k] ??= []; doc[k].push(v); });
+    if (update.$addToSet) Object.entries(update.$addToSet).forEach(([k,v]) => { doc[k] ??= []; if (!doc[k].includes(v)) doc[k].push(v); });
+    if (update.$pull) Object.entries(update.$pull).forEach(([k,v]) => { doc[k] = (doc[k] ?? []).filter((x:any) => x !== v); });
+  }
+
+  if (code.includes(".updateMany(")) {
+    const [filterText, updateText] = extractMethodArgs(code, "updateMany");
+    const filter = safeEvalObject(filterText || "{}");
+    const update = safeEvalObject(updateText || "{}");
+    const matched = data.filter((d) => matches(d, filter));
+
+    matched.forEach((doc: any) => applyUpdate(doc, update));
+
+    return {
+      data,
+      output: {
+        acknowledged: true,
+        matchedCount: matched.length,
+        modifiedCount: matched.length,
+        documents: matched
+      }
+    };
+  }
+
   if (code.includes(".updateOne(")) {
     const [filterText, updateText] = extractMethodArgs(code, "updateOne");
     const filter = safeEvalObject(filterText);
     const update = safeEvalObject(updateText);
     const doc: any = data.find((d) => matches(d, filter));
-    if (!doc) return { data, output: { matchedCount: 0, modifiedCount: 0 } };
+    if (!doc) return { data, output: { acknowledged: true, matchedCount: 0, modifiedCount: 0 } };
 
-    if (update.$set) Object.assign(doc, update.$set);
-    if (update.$inc) Object.entries(update.$inc).forEach(([k,v]) => doc[k] = (doc[k] ?? 0) + Number(v));
-    if (update.$push) Object.entries(update.$push).forEach(([k,v]) => { doc[k] ??= []; doc[k].push(v); });
-    if (update.$addToSet) Object.entries(update.$addToSet).forEach(([k,v]) => { doc[k] ??= []; if (!doc[k].includes(v)) doc[k].push(v); });
-    if (update.$pull) Object.entries(update.$pull).forEach(([k,v]) => { doc[k] = (doc[k] ?? []).filter((x:any) => x !== v); });
+    applyUpdate(doc, update);
 
-    return { data, output: { matchedCount: 1, modifiedCount: 1, document: doc } };
+    return { data, output: { acknowledged: true, matchedCount: 1, modifiedCount: 1, document: doc } };
+  }
+
+  if (code.includes(".deleteMany(")) {
+    const [filterText = "{}"] = extractMethodArgs(code, "deleteMany");
+    const filter = safeEvalObject(filterText);
+    const deleted = data.filter((d) => matches(d, filter));
+    const remaining = data.filter((d) => !matches(d, filter));
+    data.splice(0, data.length, ...remaining);
+
+    return {
+      data,
+      output: {
+        acknowledged: true,
+        deletedCount: deleted.length,
+        documents: deleted
+      }
+    };
   }
 
   if (code.includes(".deleteOne(")) {
@@ -195,7 +236,7 @@ function runMongo(code: string, input: Product[]) {
     return { data, output: { deletedCount: 1, document: deleted } };
   }
 
-  return { data, output: "المحاكي يدعم الآن find / findOne / insertOne / insertMany / updateOne / deleteOne في أمثلة MongoDB الأساسية." };
+  return { data, output: "المحاكي يدعم الآن find / findOne / insertOne / insertMany / updateOne / updateMany / deleteOne / deleteMany في أمثلة MongoDB الأساسية." };
 }
 
 export default function Playground({ lessonId, initialCode }: Props) {
