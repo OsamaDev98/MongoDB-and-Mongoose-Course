@@ -51,3 +51,10 @@
  .hero{padding:26px 22px}
  .playgroundTop{height:auto;min-height:48px;gap:10px;align-items:flex-start;flex-direction:column;padding:12px 14px}
 }
+
+.conceptCard.detailed{min-height:unset}
+.conceptBody{min-width:0;width:100%}
+.miniExample{margin-top:10px;padding:10px 12px;border-radius:10px;background:#0f2117;border:1px solid #25432f;color:#b9d4c1;font-size:13px;line-height:1.75}
+.miniExample b{color:#7cf2a0}
+.miniCode{margin:10px 0 0!important;padding:13px 14px!important;border-radius:10px!important;font-size:12.5px!important;min-height:auto!important;background:#050907!important}
+@media(max-width:900px){.conceptGrid{grid-template-columns:1fr}}
