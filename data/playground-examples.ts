@@ -49,15 +49,19 @@ db.products.insertMany([
 7: `db.products.find({
   "specs.storage": 256
 })`,
-8: `db.products.updateOne(
-  { name: "iPhone" },
+8: `// جرّب updateOne أو updateMany
+
+db.products.updateMany(
+  { category: "phones" },
   {
-    $inc: { stock: -1 },
-    $addToSet: { tags: "featured" }
+    $inc: { stock: 5 },
+    $addToSet: { tags: "restocked" }
   }
 )`,
-9: `db.products.deleteOne({
-  name: "Mouse"
+9: `// جرّب deleteOne أو deleteMany
+
+db.products.deleteMany({
+  active: false
 })`,
 10: `db.products
   .find({ active: true })
