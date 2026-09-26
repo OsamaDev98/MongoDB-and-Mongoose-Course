@@ -35,7 +35,10 @@ export const lessonPoints: Record<number, PointExplanation[]> = {
 {title:"find()",explanation:"تعيد مجموعة Documents تطابق الـ Filter. إذا استخدمت {} كـ Filter فهذا يعني لا يوجد شرط وبالتالي ترجع كل البيانات تقريبًا.",code:`db.products.find({ price: { $gte: 1000 } })`},
 {title:"findOne()",explanation:"تعيد Document واحد فقط يطابق الشرط، ومناسبة عندما تتوقع نتيجة واحدة مثل البحث بالبريد الإلكتروني.",code:`db.users.findOne({ email: "a@b.com" })`},
 {title:"Filter",explanation:"الـ Filter هو Object يصف الشروط. فكر فيه كسؤال: أي Documents أريد؟"},
-{title:"Projection",explanation:"Projection تحدد الحقول التي تريدها من Documents المطابقة. مفيدة لتقليل البيانات التي ترجع من قاعدة البيانات.",code:`db.users.find({}, { name:1, email:1, _id:0 })`},
+{title:"Projection",explanation:"Projection تحدد الحقول التي تريد عرضها من Documents المطابقة. القاعدة الأساسية: 1 = Include أي أظهر الحقل، و0 = Exclude أي أخفِ الحقل. مثال: { name: 1, price: 1, _id: 0 } يعني أظهر name وprice ولا تعرض _id.",example:"إذا كان الـ Document يحتوي name وprice وstock وcategory، فإن Projection بـ name:1 وprice:1 سيعيد هذين الحقلين فقط. وكتابة _id:0 تخفي _id.",code:`db.products.find(
+  { price: { $gte: 1000 } },
+  { name: 1, price: 1, _id: 0 }
+)`},
 {title:"Cursor",explanation:"find لا يعيد Array عادية مباشرة في shell/driver؛ يعيد Cursor يمثل نتيجة يمكن المرور عليها أو ترتيبها أو تحديدها."}
 ],
 6:[
