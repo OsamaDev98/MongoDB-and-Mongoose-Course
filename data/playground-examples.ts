@@ -14,15 +14,28 @@ db.products.find({})`,
 db.products.find({
   "specs.storage": 256
 })`,
-4: `db.products.insertOne({
-  name: "AirPods",
-  price: 850,
-  stock: 12,
-  category: "accessories",
-  active: true,
-  tags: ["apple"],
-  specs: { color: "white" }
-})`,
+4: `// جرّب insertOne أولًا، ثم بدّلها بـ insertMany
+
+db.products.insertMany([
+  {
+    name: "AirPods",
+    price: 850,
+    stock: 12,
+    category: "accessories",
+    active: true,
+    tags: ["apple"],
+    specs: { color: "white" }
+  },
+  {
+    name: "Keyboard",
+    price: 320,
+    stock: 20,
+    category: "accessories",
+    active: true,
+    tags: ["computer"],
+    specs: { color: "black" }
+  }
+])`,
 5: `db.products.find(
   { price: { $gte: 1000 } },
   { name: 1, price: 1, _id: 0 }
