@@ -147,7 +147,7 @@ await session.endSession();`,challenge:"صمّم transaction لإنشاء order 
   routes/
   middleware/
   validators/
-  app.ts`,challenge:"ابنِ Product CRUD + Order transaction + revenue aggregation بدون الرجوع للشرح.",quiz:{question:"أفضل دليل أنك فهمت الكورس؟",options:["حفظ syntax","بناء API واتخاذ modeling/index decisions","قراءة الدروس فقط","نسخ الكود"],answer:1,explanation:"الهدف هو القدرة على التصميم والتنفيذ والتفسير، لا الحفظ."}}
+  app.ts`,challenge:"ابنِ Product CRUD + Order transaction + revenue aggregation بدون الرجوع للشرح.",quiz:{question:"أفضل دليل أنك فهمت الكورس؟",options:["حفظ syntax","بناء API واتخاذ modeling/index decisions","قراءة الدروس فقط","نسخ الكود"],answer:1,explanation:"الهدف هو القدرة على التصميم والتنفيذ والتفسير، لا الحفظ."}},
   {id:39,day:3,title:"مراجعة اليوم الثالث",duration:"30 min",summary:"ملخص شامل لـ Mongoose ومرجع نهائي للكورس.",concepts:["Schema / Model / Document","Validation","Populate","Middleware","Performance & Transactions"],challenge:"راجع Mongoose ثم نفّذ Query المراجعة النهائية.",quiz:{question:"Schema في Mongoose تمثل ماذا؟",options:["بيانات فعلية","شكل وقواعد البيانات","Server","Index فقط"],answer:1,explanation:"Schema تحدد الشكل والقواعد، Model هي واجهة التعامل، Document هي instance."}},
 ];
 
