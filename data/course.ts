@@ -55,6 +55,8 @@ db.products.find().sort({ createdAt: -1 }).skip((page-1)*limit).limit(limit)`,ch
 // Reference
 { title: "Post", authorId: ObjectId("...") }`,challenge:"صمّم Users/Products/Orders/Reviews وحدد ما يتم embed وما يتم reference.",quiz:{question:"أفضل قرار modeling يعتمد أساسًا على؟",options:["شكل SQL السابق","Access patterns","اسم collection","عدد الملفات"],answer:1,explanation:"MongoDB schema design يبدأ من كيفية قراءة وكتابة البيانات."}},
 
+  {id:37,day:1,title:"مراجعة اليوم الأول",duration:"25 min",summary:"ملخص ومرجع سريع لكل MongoDB Core قبل الانتقال لليوم الثاني.",concepts:["Core concepts","CRUD","Query Operators","Projection","Data Modeling"],challenge:"راجع اليوم الأول ثم نفّذ التحدي النهائي.",quiz:{question:"في Projection ماذا تعني القيمة 1؟",options:["Exclude","Include","Delete","Sort"],answer:1,explanation:"1 = Include، بينما 0 = Exclude."}},
+
   {id:12,day:2,title:"Aggregation Pipeline",duration:"20 min",summary:"افهم تدفق documents عبر stages متتابعة.",concepts:["aggregate([...])","كل stage يستقبل ناتج السابق","مفيد للتقارير والتحويلات"],code:`db.orders.aggregate([
   { $match: { status: "completed" } },
   { $group: { _id: null, revenue: { $sum: "$total" } } }
@@ -87,6 +89,8 @@ const client = new MongoClient(process.env.MONGO_URI!);
 await client.connect();
 const products = client.db("shop").collection("products");
 const data = await products.find({ active: true }).toArray();`,challenge:"اكتب function تعيد product بالـ _id.",quiz:{question:"Mongoose مبني فوق ماذا في Node.js؟",options:["PostgreSQL","MongoDB Driver","Redis","Express"],answer:1,explanation:"Mongoose يستخدم MongoDB Node.js driver تحت الغطاء."}},
+
+  {id:38,day:2,title:"مراجعة اليوم الثاني",duration:"25 min",summary:"مرجع سريع لـ Aggregation وIndexes وTransactions وAtlas وDriver.",concepts:["Aggregation","Indexes","explain","Transactions","Atlas & Driver"],challenge:"راجع اليوم الثاني ثم نفّذ Pipeline المراجعة.",quiz:{question:"ماذا يعني COLLSCAN؟",options:["استخدام Index","فحص Collection","Transaction","Projection"],answer:1,explanation:"COLLSCAN يعني فحص Collection مباشرة."}},
 
   {id:22,day:3,title:"Why Mongoose?",duration:"12 min",summary:"افهم ما الذي يضيفه Mongoose فوق MongoDB Driver.",concepts:["Schemas/Models","Validation","Middleware","Populate","Convenience abstraction"],challenge:"اذكر ميزتين تحتاجهما في API وقد يوفرهما Mongoose.",quiz:{question:"Mongoose هو؟",options:["Database server","ODM لـ MongoDB","SQL engine","Cloud provider"],answer:1,explanation:"Mongoose ODM لـ MongoDB في Node.js."}},
   {id:23,day:3,title:"Connection",duration:"14 min",summary:"اربط التطبيق بقاعدة البيانات وتعامل مع config بطريقة صحيحة.",concepts:["mongoose.connect","Environment variables","Connection lifecycle","لا تضع credentials في Git"],code:`import mongoose from "mongoose";
@@ -144,6 +148,7 @@ await session.endSession();`,challenge:"صمّم transaction لإنشاء order 
   middleware/
   validators/
   app.ts`,challenge:"ابنِ Product CRUD + Order transaction + revenue aggregation بدون الرجوع للشرح.",quiz:{question:"أفضل دليل أنك فهمت الكورس؟",options:["حفظ syntax","بناء API واتخاذ modeling/index decisions","قراءة الدروس فقط","نسخ الكود"],answer:1,explanation:"الهدف هو القدرة على التصميم والتنفيذ والتفسير، لا الحفظ."}}
+  {id:39,day:3,title:"مراجعة اليوم الثالث",duration:"30 min",summary:"ملخص شامل لـ Mongoose ومرجع نهائي للكورس.",concepts:["Schema / Model / Document","Validation","Populate","Middleware","Performance & Transactions"],challenge:"راجع Mongoose ثم نفّذ Query المراجعة النهائية.",quiz:{question:"Schema في Mongoose تمثل ماذا؟",options:["بيانات فعلية","شكل وقواعد البيانات","Server","Index فقط"],answer:1,explanation:"Schema تحدد الشكل والقواعد، Model هي واجهة التعامل، Document هي instance."}},
 ];
 
 export const dayMeta = {
