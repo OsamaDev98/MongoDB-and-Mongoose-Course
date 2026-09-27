@@ -7,6 +7,7 @@ import { explanations } from "@/data/explanations";
 import Playground from "@/components/Playground";
 import { lessonPoints } from "@/data/lesson-points";
 import { playgroundExamples } from "@/data/playground-examples";
+import { challengeExamples } from "@/data/challenge-examples";
 
 const STORAGE_KEY = "mongo-course-progress-v1";
 
@@ -32,6 +33,7 @@ export default function CourseApp() {
   const lesson = lessons.find((l) => l.id === activeId)!;
   const explanation = explanations[activeId];
   const points = lessonPoints[activeId] ?? [];
+  const challenge = challengeExamples[activeId];
   const progress = Math.round((completed.length / lessons.length) * 100);
   const dayLessons = useMemo(() => [1, 2, 3].map((d) => lessons.filter((l) => l.day === d)), []);
 
@@ -146,7 +148,7 @@ export default function CourseApp() {
               غيّر القيم بنفسك ثم اضغط Run. الهدف هنا أن ترى نتيجة الـ Query فورًا بدل الاكتفاء بقراءة الكود.
             </p>
             {explanation.codeNote && <p className="codeNote">{explanation.codeNote}</p>}
-            <Playground lessonId={lesson.id} initialCode={playgroundExamples[lesson.id] ?? lesson.code} />
+            <Playground lessonId={lesson.id} initialCode={playgroundExamples[lesson.id] ?? lesson.code} challengeCode={challenge?.code} challengePrompt={challenge?.prompt} />
           </div>
         </div>
 
@@ -160,8 +162,8 @@ export default function CourseApp() {
           <div className="grow">
             <span className="sceneLabel">جرّب بنفسك</span>
             <h2>Challenge صغير</h2>
-            <p className="challenge">{lesson.challenge}</p>
-            <p className="hint">حاول لمدة دقيقة أو دقيقتين قبل رؤية أي حل. الهدف أن تستخدم الفكرة، لا أن تحفظ السطر.</p>
+            <p className="challenge">{challenge?.prompt ?? lesson.challenge}</p>
+            <p className="hint">التحدي مرتبط بنفس مثال الـ Playground. اضغط Load Challenge داخل المحرر، عدّل الكود ثم اضغط Run.</p>
           </div>
         </div>
 
