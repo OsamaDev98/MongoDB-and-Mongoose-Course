@@ -8,6 +8,7 @@ import Playground from "@/components/Playground";
 import { lessonPoints } from "@/data/lesson-points";
 import { playgroundExamples } from "@/data/playground-examples";
 import { challengeExamples } from "@/data/challenge-examples";
+import { dayReviews } from "@/data/day-reviews";
 
 const STORAGE_KEY = "mongo-course-progress-v1";
 
@@ -33,7 +34,8 @@ export default function CourseApp() {
   const lesson = lessons.find((l) => l.id === activeId)!;
   const explanation = explanations[activeId];
   const points = lessonPoints[activeId] ?? [];
-  const challenge = challengeExamples[activeId];
+  const review = dayReviews[activeId];
+  const challenge = review?.challenge ?? challengeExamples[activeId];
   const progress = Math.round((completed.length / lessons.length) * 100);
   const dayLessons = useMemo(() => [1, 2, 3].map((d) => lessons.filter((l) => l.day === d)), []);
 
@@ -48,6 +50,11 @@ export default function CourseApp() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     const idx = lessons.findIndex((l) => l.id === activeId);
     if (idx < lessons.length - 1) goTo(lessons[idx + 1].id);
+  }
+
+  function goPrevious() {
+    const idx = lessons.findIndex((l) => l.id === activeId);
+    if (idx > 0) goTo(lessons[idx - 1].id);
   }
 
   return (
@@ -86,6 +93,48 @@ export default function CourseApp() {
           <p>{lesson.summary}</p>
           <div className="chips"><span>{lesson.duration}</span><span>{dayMeta[lesson.day].title}</span><span>شرح عملي</span></div>
         </header>
+
+        {review && (
+          <section className="reviewSection">
+            <div className="reviewIntro">
+              <span className="sceneLabel">Daily Review</span>
+              <h2>{review.title}</h2>
+              <p>{review.intro}</p>
+            </div>
+
+            <div className="reviewLearned">
+              <h3>ماذا راجعنا اليوم؟</h3>
+              <div className="reviewTags">
+                {review.learned.map((item) => <span key={item}>{item}</span>)}
+              </div>
+            </div>
+
+            <div className="reviewTableWrap">
+              <table className="reviewTable">
+                <thead><tr><th>الموضوع</th><th>Syntax</th><th>المعنى</th></tr></thead>
+                <tbody>
+                  {review.table.map((row) => (
+                    <tr key={row.topic}>
+                      <td>{row.topic}</td>
+                      <td><code>{row.syntax}</code></td>
+                      <td>{row.meaning}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="reviewGrid">
+              <div className="reviewBox"><h3>قواعد مهمة</h3><ul>{review.rules.map((x)=><li key={x}>{x}</li>)}</ul></div>
+              <div className="reviewBox"><h3>أخطاء شائعة</h3><ul>{review.mistakes.map((x)=><li key={x}>{x}</li>)}</ul></div>
+            </div>
+
+            <div className="reviewChecklist">
+              <h3>Checklist قبل الانتقال</h3>
+              {review.checklist.map((x)=><label key={x}><input type="checkbox" /> <span>{x}</span></label>)}
+            </div>
+          </section>
+        )}
 
         <div className="scene teaching">
           <div className="sceneNo">01</div>
@@ -148,7 +197,7 @@ export default function CourseApp() {
               غيّر القيم بنفسك ثم اضغط Run. الهدف هنا أن ترى نتيجة الـ Query فورًا بدل الاكتفاء بقراءة الكود.
             </p>
             {explanation.codeNote && <p className="codeNote">{explanation.codeNote}</p>}
-            <Playground lessonId={lesson.id} initialCode={playgroundExamples[lesson.id] ?? lesson.code} challengeCode={challenge?.code} challengePrompt={challenge?.prompt} />
+            <Playground lessonId={lesson.id} initialCode={review?.challenge.code ?? playgroundExamples[lesson.id] ?? lesson.code} challengeCode={challenge?.code} challengePrompt={challenge?.prompt} />
           </div>
         </div>
 
@@ -187,7 +236,7 @@ export default function CourseApp() {
         </div>
 
         <footer className="lessonFooter">
-          <button className="secondary" disabled={activeId === 1} onClick={() => goTo(activeId - 1)}>السابق</button>
+          <button className="secondary" disabled={lessons.findIndex((l) => l.id === activeId) === 0} onClick={goPrevious}>السابق</button>
           <button className="primary" onClick={markComplete}>{completed.includes(activeId) ? "التالي" : "أكملت الدرس ←"}</button>
         </footer>
       </section>
