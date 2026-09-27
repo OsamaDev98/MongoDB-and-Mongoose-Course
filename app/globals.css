@@ -58,3 +58,7 @@
 .miniExample b{color:#7cf2a0}
 .miniCode{margin:10px 0 0!important;padding:13px 14px!important;border-radius:10px!important;font-size:12.5px!important;min-height:auto!important;background:#050907!important}
 @media(max-width:900px){.conceptGrid{grid-template-columns:1fr}}
+
+.challengeBtn{background:#173b25;border:1px solid #2f6e43;color:#a8f0bc}
+.challengeBtn:hover{background:#1d4a2e}
+.challengeStrip{direction:rtl;text-align:right;padding:11px 14px;background:#102218;border-top:1px solid #21412d;color:#cbe6d3;font:600 12px/1.8 var(--font-cairo),sans-serif}
