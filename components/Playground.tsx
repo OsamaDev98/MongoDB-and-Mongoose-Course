@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-type Props = { lessonId: number; initialCode?: string };
+type Props = { lessonId: number; initialCode?: string; challengeCode?: string; challengePrompt?: string };
 
 type Product = {
   _id: number;
@@ -300,7 +300,7 @@ function runMongo(code: string, input: Product[]) {
   return { data, output: "المحاكي يدعم الآن find / findOne / insertOne / insertMany / updateOne / updateMany / deleteOne / deleteMany في أمثلة MongoDB الأساسية." };
 }
 
-export default function Playground({ lessonId, initialCode }: Props) {
+export default function Playground({ lessonId, initialCode, challengeCode, challengePrompt }: Props) {
   const defaultCode = useMemo(() => {
     if (initialCode && initialCode.includes("db.")) return initialCode;
     if (lessonId <= 11) return 'db.products.find({ price: { $gte: 1000 } })';
@@ -311,15 +311,81 @@ export default function Playground({ lessonId, initialCode }: Props) {
   const [code, setCode] = useState(defaultCode);
   const [data, setData] = useState<Product[]>(seed);
   const [output, setOutput] = useState<unknown>(seed);
+  const [mode, setMode] = useState<"example" | "challenge">("example");
 
   useEffect(() => {
     setCode(defaultCode);
     setData(seed);
     setOutput(seed);
+    setMode("example");
   }, [defaultCode]);
 
   function run() {
     try {
+      if (code.includes(".aggregate(")) {
+        setOutput({
+          simulated: true,
+          message: "Aggregation example recognized. في هذا الدرس نتحقق من شكل الـ pipeline داخل المحاكي التعليمي.",
+          pipeline: code
+        });
+        return;
+      }
+
+      if (code.includes(".createIndex(") || code.includes(".index(")) {
+        setOutput({
+          simulated: true,
+          message: "Index definition recognized.",
+          result: "Index would be created in a real MongoDB/Mongoose database."
+        });
+        return;
+      }
+
+      if (code.includes(".explain(")) {
+        setOutput({
+          simulated: true,
+          queryPlanner: { winningPlan: { stage: "IXSCAN / COLLSCAN depends on indexes" } },
+          executionStats: { docsExamined: data.length, nReturned: data.filter(d => d.category === "phones").length },
+          note: "هذه محاكاة تعليمية لـ explain وليست execution plan من MongoDB Server حقيقي."
+        });
+        return;
+      }
+
+      if (code.includes("mongoose.connect(")) {
+        setOutput({
+          simulated: true,
+          connected: true,
+          message: "صيغة الاتصال صحيحة تعليميًا. الاتصال الحقيقي يحتاج MONGO_URI وMongoDB Server."
+        });
+        return;
+      }
+
+      if (code.includes("new mongoose.Schema") || code.includes("mongoose.model") || code.includes("Schema.Types.ObjectId") || code.includes(".pre(") || code.includes(".virtual(") || code.includes(".methods.") || code.includes(".statics.")) {
+        setOutput({
+          simulated: true,
+          message: "Mongoose structure recognized successfully.",
+          note: "المحاكي يتحقق من الفكرة والبنية؛ التنفيذ الحقيقي لهذه الأوامر يحتاج Mongoose وMongoDB."
+        });
+        return;
+      }
+
+      if (code.includes("findByIdAndUpdate(") || code.includes(".populate(") || code.includes(".lean()") || code.includes("withTransaction(") || code.includes("startSession(")) {
+        setOutput({
+          simulated: true,
+          message: "Mongoose query recognized successfully.",
+          note: "هذا الجزء محاكاة تعليمية لأن التنفيذ الحقيقي يحتاج Model وDatabase connection."
+        });
+        return;
+      }
+
+      if (code.includes("db.collection(") || code.includes(".toArray()")) {
+        setOutput({
+          simulated: true,
+          message: "MongoDB Node.js Driver example recognized.",
+          documents: data.filter(d => d.active)
+        });
+        return;
+      }
+
       if (code.includes("Product.find(")) {
         const open = code.indexOf("Product.find(") + "Product.find(".length;
         const close = code.lastIndexOf(")");
@@ -339,6 +405,18 @@ export default function Playground({ lessonId, initialCode }: Props) {
     setCode(defaultCode);
     setData(seed);
     setOutput(seed);
+    setMode("example");
+  }
+
+  function loadChallenge() {
+    if (!challengeCode) return;
+    setCode(challengeCode);
+    setData(seed);
+    setOutput({
+      challenge: true,
+      message: challengePrompt || "نفّذ التحدي ثم اضغط Run."
+    });
+    setMode("challenge");
   }
 
   return (
@@ -354,8 +432,10 @@ export default function Playground({ lessonId, initialCode }: Props) {
           <textarea value={code} onChange={(e)=>setCode(e.target.value)} spellCheck={false} />
           <div className="editorActions">
             <button className="runBtn" onClick={run}>▶ Run</button>
+            {challengeCode && <button className="challengeBtn" onClick={loadChallenge}>Load Challenge</button>}
             <button className="resetBtn" onClick={reset}>Reset</button>
           </div>
+          {mode === "challenge" && challengePrompt && <div className="challengeStrip">{challengePrompt}</div>}
         </div>
 
         <div className="outputPane">
