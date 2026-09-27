@@ -62,3 +62,25 @@
 .challengeBtn{background:#173b25;border:1px solid #2f6e43;color:#a8f0bc}
 .challengeBtn:hover{background:#1d4a2e}
 .challengeStrip{direction:rtl;text-align:right;padding:11px 14px;background:#102218;border-top:1px solid #21412d;color:#cbe6d3;font:600 12px/1.8 var(--font-cairo),sans-serif}
+
+.reviewSection{margin:26px 0 10px;padding:26px;border:1px solid #254433;border-radius:20px;background:linear-gradient(145deg,#0d1d15,#09130e)}
+.reviewIntro h2{margin:4px 0 10px;font-size:30px}
+.reviewIntro p{color:#b5c9bc;line-height:1.9}
+.reviewLearned{margin-top:24px}
+.reviewLearned h3,.reviewBox h3,.reviewChecklist h3{margin:0 0 12px;font-size:17px}
+.reviewTags{display:flex;flex-wrap:wrap;gap:8px}
+.reviewTags span{padding:7px 10px;border-radius:999px;background:#102419;border:1px solid #2a5038;color:#bfe5c9;font-size:12px}
+.reviewTableWrap{overflow-x:auto;margin-top:24px;border:1px solid #223d2d;border-radius:14px}
+.reviewTable{width:100%;border-collapse:collapse;min-width:680px}
+.reviewTable th,.reviewTable td{padding:13px 14px;text-align:right;border-bottom:1px solid #1c3226}
+.reviewTable th{background:#0a1510;color:#7fe59a;font-size:12px}
+.reviewTable td{color:#c4d5ca;font-size:13px;line-height:1.7}
+.reviewTable code{direction:ltr;display:inline-block;background:#07100b;border:1px solid #21382a;padding:4px 7px;border-radius:7px;color:#bff1ca;font-family:Consolas,monospace}
+.reviewGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+.reviewBox{background:#0b1711;border:1px solid #20382a;border-radius:14px;padding:18px}
+.reviewBox ul{margin:0;padding-right:20px}
+.reviewBox li{color:#afc3b5;line-height:1.9;margin:5px 0}
+.reviewChecklist{margin-top:20px;background:#0a1510;border:1px solid #213a2b;border-radius:14px;padding:18px}
+.reviewChecklist label{display:flex;align-items:flex-start;gap:10px;padding:8px 0;color:#c5d8ca;line-height:1.7}
+.reviewChecklist input{margin-top:5px;accent-color:var(--green)}
+@media(max-width:900px){.reviewGrid{grid-template-columns:1fr}.reviewSection{padding:18px}}
